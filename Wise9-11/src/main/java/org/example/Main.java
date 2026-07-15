@@ -9,11 +9,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 public class Main {
     static Scanner sc = new Scanner(System.in);
     static ArrayList<Wise> wiseArray = new ArrayList<>();
     private static final Path DB_PATH = Paths.get("db", "wiseSaying");
+    static ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
 
 
     public static void main(String[] args) throws IOException {
@@ -46,6 +48,8 @@ public class Main {
                 case "수정":
                     update(id);
                     break;
+                case "빌드":
+                    build();
             }
         }
     }
@@ -63,7 +67,6 @@ public class Main {
 
         // json 파일로 명언 저장
         Files.createDirectories(DB_PATH);
-        ObjectMapper mapper = new ObjectMapper();
         Path filePath = DB_PATH.resolve(wise.getId() + ".json");
         mapper.writeValue(filePath.toFile(), wise);
 
@@ -103,7 +106,7 @@ public class Main {
         }
     }
 
-    public static void update(int id) {
+    public static void update(int id) throws IOException {
         Wise wise = findById(id);
         if (wise != null) {
             System.out.println("명언(기존) : " + wise.getContent());
@@ -114,12 +117,23 @@ public class Main {
             System.out.print("작가 : ");
             String newAuthor = sc.nextLine();
 
+            // wise 객체 수정
             wise.updateWise(newContent, newAuthor);
+
+            // 파일 수정
+            Path filePath = DB_PATH.resolve(wise.getId() + ".json");
+            mapper.writeValue(filePath.toFile(), wise);
         }
         else {
             System.out.println(id + "번 명언은 존재하지 않습니다.");
         }
+    }
 
+    public static void build() throws IOException {
+        Files.createDirectories(DB_PATH);
+        Path filePath = DB_PATH.resolve("data.json");
+
+        mapper.writeValue(filePath.toFile(), wiseArray);
     }
 }
 
