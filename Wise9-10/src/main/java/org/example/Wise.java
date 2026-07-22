@@ -1,15 +1,14 @@
 package org.example;
 
 public class Wise {
-    String content;
-    String author;
-    int id;
-    static int count = 0;
+    private int id;
+    private String content;
+    private String author;
 
-    public Wise(String content, String author) {
+    public Wise(int id, String content, String author) {
+        this.id = id;
         this.content = content;
         this.author = author;
-        this.id = ++count;
     }
 
     public void getWise() {
@@ -32,4 +31,5 @@ public class Wise {
         this.content = newContent;
         this.author = newAuthor;
     }
+
 }
